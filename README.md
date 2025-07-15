@@ -5,7 +5,12 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-purple.svg)
 ![SQLite](https://img.shields.io/badge/Database-SQLite-green.svg)
 
-**Kiroft Museum** adalah sistem pemesanan tiket museum online yang memungkinkan pengguna untuk menjelajahi museum di Indonesia, memesan tiket, dan mengelola kunjungan mereka dengan mudah.
+------------------------------------------------------------------------------------
+
+## NAMA ANGGOTA KELOMPOK :
+1. Alicya Khusnul Chotimah  (3012310054)
+2. Muhammad Rafii Firdaus   (3012310024)
+3. Rahmadani Hilda Kholifah (3012310706)
 
 --------------------------------------------------------------------------------------
 
