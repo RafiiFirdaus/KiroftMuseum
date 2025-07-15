@@ -103,7 +103,7 @@ Kiroft Museum adalah website modern yang dibangun dengan Laravel versi 12 untuk 
 
 1. **Clone Repository**
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/RafiiFirdaus/KiroftMuseum>
    cd KiroftMuseum
    ```
 
