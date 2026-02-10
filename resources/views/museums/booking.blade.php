@@ -194,6 +194,28 @@
             margin-bottom: 0.5rem;
         }
 
+        .form-label.required::after {
+            content: ' *';
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .validation-message {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .validation-message.error {
+            color: #dc3545;
+            display: block;
+        }
+
+        .validation-message.success {
+            color: #28a745;
+            display: block;
+        }
+
         .form-control {
             border: 2px solid #e9ecef;
             border-radius: 10px;
@@ -205,6 +227,24 @@
         .form-control:focus {
             border-color: #393733;
             box-shadow: 0 0 0 0.2rem rgba(57, 55, 51, 0.25);
+        }
+
+        .form-control.is-valid {
+            border-color: #28a745;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
         }
 
         .file-upload {
@@ -433,9 +473,14 @@
             transition: all 0.3s ease;
         }
 
-        .book-btn:hover {
+        .book-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(57, 55, 51, 0.3);
+        }
+
+        .book-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .back-button {
@@ -541,6 +586,42 @@
         .navbar-icons .btn[title="Search"] {
             display: none;
         }
+
+        /* Alert styling for validation messages */
+        .alert-validation {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .alert-validation.hiding {
+            animation: slideOutRight 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -641,22 +722,25 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Full Name *</label>
-                                <input type="text" class="form-control" name="full_name" required>
+                                <label class="form-label required">Full Name</label>
+                                <input type="text" class="form-control" name="full_name" placeholder="Enter your full name" required>
+                                <div class="validation-message" id="fullname-validation"></div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Email *</label>
-                                <input type="email" class="form-control" name="email" required>
+                                <label class="form-label required">Email</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter your email address" required>
+                                <div class="validation-message" id="email-validation"></div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-control" name="phone" required>
+                                <label class="form-label required">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone" placeholder="Enter your phone number" required>
+                                <div class="validation-message" id="phone-validation"></div>
                             </div>
                             <div class="col-md-6 mb-3" id="studentIdSection" style="display: none;">
-                                <label class="form-label">Student ID *</label>
+                                <label class="form-label required">Student ID</label>
                                 <div class="file-upload" onclick="document.getElementById('student_id').click()">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <div id="uploadText">Upload your student ID photo</div>
@@ -1026,6 +1110,33 @@
             'gopay': '/images/qr-codes/gopay-qr.jpg'
         };
 
+        // Function to show toast notification
+        function showValidationNotification(message, type = 'success') {
+            // Remove existing notification if any
+            const existingAlert = document.querySelector('.alert-validation');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            // Create notification element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-validation`;
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                alertDiv.classList.add('hiding');
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 3000);
+        }
+
         function showPaymentModal() {
             console.log('showPaymentModal() called');
             console.log('Bootstrap object available:', typeof bootstrap !== 'undefined');
@@ -1226,7 +1337,129 @@
             console.log('Bootstrap available after DOM load:', typeof bootstrap !== 'undefined');
 
             initCalendar();
-            loadNavbar();            // Add event listener for student ID file input
+            loadNavbar();
+
+            // Add real-time validation for form inputs
+            const fullNameInput = document.querySelector('input[name="full_name"]');
+            const emailInput = document.querySelector('input[name="email"]');
+            const phoneInput = document.querySelector('input[name="phone"]');
+
+            // Validate Full Name
+            if (fullNameInput) {
+                const fullNameValidation = document.getElementById('fullname-validation');
+                
+                fullNameInput.addEventListener('input', function() {
+                    if (this.value.trim().length >= 3) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                        if (fullNameValidation) {
+                            fullNameValidation.textContent = 'Looks good!';
+                            fullNameValidation.className = 'validation-message success';
+                        }
+                    } else {
+                        this.classList.remove('is-valid');
+                        if (this.value.trim().length > 0) {
+                            this.classList.add('is-invalid');
+                            if (fullNameValidation) {
+                                fullNameValidation.textContent = 'Name must be at least 3 characters';
+                                fullNameValidation.className = 'validation-message error';
+                            }
+                        } else {
+                            if (fullNameValidation) {
+                                fullNameValidation.className = 'validation-message';
+                            }
+                        }
+                    }
+                });
+
+                fullNameInput.addEventListener('blur', function() {
+                    if (this.value.trim().length === 0) {
+                        this.classList.remove('is-valid', 'is-invalid');
+                        if (fullNameValidation) {
+                            fullNameValidation.className = 'validation-message';
+                        }
+                    }
+                });
+            }
+
+            // Validate Email
+            if (emailInput) {
+                const emailValidation = document.getElementById('email-validation');
+                
+                emailInput.addEventListener('input', function() {
+                    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+                    if (emailRegex.test(this.value.trim())) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                        if (emailValidation) {
+                            emailValidation.textContent = 'Valid email address!';
+                            emailValidation.className = 'validation-message success';
+                        }
+                    } else {
+                        this.classList.remove('is-valid');
+                        if (this.value.trim().length > 0) {
+                            this.classList.add('is-invalid');
+                            if (emailValidation) {
+                                emailValidation.textContent = 'Please enter a valid email address';
+                                emailValidation.className = 'validation-message error';
+                            }
+                        } else {
+                            if (emailValidation) {
+                                emailValidation.className = 'validation-message';
+                            }
+                        }
+                    }
+                });
+
+                emailInput.addEventListener('blur', function() {
+                    if (this.value.trim().length === 0) {
+                        this.classList.remove('is-valid', 'is-invalid');
+                        if (emailValidation) {
+                            emailValidation.className = 'validation-message';
+                        }
+                    }
+                });
+            }
+
+            // Validate Phone Number
+            if (phoneInput) {
+                const phoneValidation = document.getElementById('phone-validation');
+                
+                phoneInput.addEventListener('input', function() {
+                    const phoneRegex = /^[0-9]{10,15}$/;
+                    const cleanPhone = this.value.replace(/[\\s-]/g, '');
+                    if (phoneRegex.test(cleanPhone)) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                        if (phoneValidation) {
+                            phoneValidation.textContent = 'Valid phone number!';
+                            phoneValidation.className = 'validation-message success';
+                        }
+                    } else {
+                        this.classList.remove('is-valid');
+                        if (this.value.trim().length > 0) {
+                            this.classList.add('is-invalid');
+                            if (phoneValidation) {
+                                phoneValidation.textContent = 'Phone number must be 10-15 digits';
+                                phoneValidation.className = 'validation-message error';
+                            }
+                        } else {
+                            if (phoneValidation) {
+                                phoneValidation.className = 'validation-message';
+                            }
+                        }
+                    }
+                });
+
+                phoneInput.addEventListener('blur', function() {
+                    if (this.value.trim().length === 0) {
+                        this.classList.remove('is-valid', 'is-invalid');
+                        if (phoneValidation) {
+                            phoneValidation.className = 'validation-message';
+                        }
+                    }
+                });
+            }            // Add event listener for student ID file input
             const studentIdInput = document.getElementById('student_id');
             if (studentIdInput) {
                 studentIdInput.addEventListener('change', function(e) {
@@ -1365,14 +1598,47 @@
             }
             console.log('Selected time slot:', selectedTimeSlot);
 
+            // Validasi input user dengan lebih spesifik
             const fullName = document.querySelector('input[name="full_name"]').value.trim();
             const email = document.querySelector('input[name="email"]').value.trim();
             const phone = document.querySelector('input[name="phone"]').value.trim();
 
             console.log('Form data:', { fullName, email, phone });
 
-            if (!fullName || !email || !phone) {
-                alert('Please fill in all required fields');
+            // Validasi Full Name
+            if (!fullName) {
+                alert('Please enter your Full Name');
+                document.querySelector('input[name="full_name"]').focus();
+                return;
+            }
+
+            // Validasi Email
+            if (!email) {
+                alert('Please enter your Email address');
+                document.querySelector('input[name="email"]').focus();
+                return;
+            }
+
+            // Validasi format email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid Email address');
+                document.querySelector('input[name="email"]').focus();
+                return;
+            }
+
+            // Validasi Phone Number
+            if (!phone) {
+                alert('Please enter your Phone Number');
+                document.querySelector('input[name="phone"]').focus();
+                return;
+            }
+
+            // Validasi format phone number (minimal 10 digit)
+            const phoneRegex = /^[0-9]{10,15}$/;
+            if (!phoneRegex.test(phone.replace(/[\s-]/g, ''))) {
+                alert('Please enter a valid Phone Number (10-15 digits)');
+                document.querySelector('input[name="phone"]').focus();
                 return;
             }
 
@@ -1398,8 +1664,28 @@
             }
 
             console.log('All validations passed, showing payment modal');
-            // If all validations pass, show payment modal
-            showPaymentModal();
+            
+            // Tampilkan konfirmasi bahwa data sudah lengkap
+            console.log('✓ Validation Complete: All required fields are filled correctly');
+            console.log('✓ Full Name:', fullName);
+            console.log('✓ Email:', email);
+            console.log('✓ Phone:', phone);
+            
+            // Tampilkan notifikasi sukses
+            showValidationNotification('All data verified successfully! Opening payment options...', 'success');
+            
+            // Tampilkan feedback pada tombol
+            const bookBtn = document.querySelector('.book-btn');
+            const originalText = bookBtn.innerHTML;
+            bookBtn.innerHTML = '<i class="fas fa-check-circle"></i> Data Verified!';
+            bookBtn.disabled = true;
+            
+            // Sekarang tampilkan opsi pembayaran karena semua validasi berhasil
+            setTimeout(() => {
+                bookBtn.innerHTML = originalText;
+                bookBtn.disabled = false;
+                showPaymentModal();
+            }, 1000);
         }
     </script>
 </body>
