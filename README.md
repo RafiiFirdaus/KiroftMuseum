@@ -371,15 +371,3 @@ Route::middleware('auth:sanctum')->group(function () {
 - File permissions 755/644
 
 ------------------------------------------------------------------------------------
-
-## 🎉 **Thanks to....**
-
-- Laravel Framework untuk foundation yang solid
-- Bootstrap untuk responsive UI components
-- Font Awesome untuk beautiful icons
-- Google Fonts untuk typography
-- Semua contributor yang telah membantu pengembangan project ini
-
-------------------------------------------------------------------------------------
-
-**Made with ❤️ for Indonesian Cultural Heritage**
