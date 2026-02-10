@@ -16,7 +16,7 @@
 
 ## 📋 **Deskripsi**
 
-Kiroft Museum adalah website modern yang dibangun dengan Laravel versi 12 untuk memfasilitasi pemesanan tiket museum secara online. Aplikasi ini menyediakan pengalaman pengguna yang seamless untuk mengeksplorasi berbagai museum di Indonesia, melakukan booking, dan mengelola tiket mereka.
+Kiroft Museum adalah website modern yang dibangun dengan menggunakan Laravel versi 12 untuk memfasilitasi pemesanan tiket museum secara online. Aplikasi ini menyediakan pengalaman pengguna yang seamless untuk mengeksplorasi berbagai museum di Indonesia, melakukan booking, dan mengelola tiket mereka.
 
 ### 🎯 **Tujuan**
 - Digitalisasi sistem pemesanan tiket museum
@@ -371,15 +371,3 @@ Route::middleware('auth:sanctum')->group(function () {
 - File permissions 755/644
 
 ------------------------------------------------------------------------------------
-
-## 🎉 **Thanks to....**
-
-- Laravel Framework untuk foundation yang solid
-- Bootstrap untuk responsive UI components
-- Font Awesome untuk beautiful icons
-- Google Fonts untuk typography
-- Semua contributor yang telah membantu pengembangan project ini
-
-------------------------------------------------------------------------------------
-
-**Made with ❤️ for Indonesian Cultural Heritage**
